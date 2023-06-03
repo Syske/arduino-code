@@ -72,12 +72,12 @@ void loop() {
     analogWrite(IA, 0);
     analogWrite(IB, 0);
 
-    analogWrite(IIA, speed_y);
-    analogWrite(IIB, 0);
+    analogWrite(IIA, 0);
+    analogWrite(IIB, speed_y);
   } else if (y > 500) { // 向左推摇杆，越靠近中间值速度越慢，摇杆的最大模拟值需要实测，我这里最大值是827左右，这里取模拟值的时候一定要包含摇杆的取值范围，否则再靠近边界的时候会出现转速抖动
     speed_x = map(y, 320, 830, 0, 255);
-    analogWrite(IA, speed_y);
-    analogWrite(IB, 0);
+    analogWrite(IA, 0);
+    analogWrite(IB, speed_y);
 
     analogWrite(IIA, 0);
     analogWrite(IIB, 0);
