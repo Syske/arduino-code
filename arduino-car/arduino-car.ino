@@ -1,5 +1,5 @@
 // L9110s驱动板A-1A引脚，连接arduino uno的2号引脚（PWM区的2号，也叫就是d2引脚）
-const int IA = 2; 
+const int IA = 2;
 // L9110s驱动板A-1B引脚，连接arduino uno的3号引脚（PWM区的3号，也叫就是d3引脚）
 const int IB = 3;
 
@@ -40,52 +40,77 @@ void loop() {
   Serial.print(",z=");
   Serial.println(z, DEC);
 
-  // 以下数值要根据自己的摇杆测试获取，如果取值有问题，会出现电机速度输出不稳定的情况，比如我手里的这款摇杆，静止状态下x轴的值在325-327之间波动，y轴在333-337之间波动
-  if (x <= 330 && x > 320) { // 静止区（也就是默认情况下摇杆的模拟输入值）
-    analogWrite(IA, 0);
-    analogWrite(IB, 0);
-
-    analogWrite(IIA, 0);
-    analogWrite(IIB, 0);
-  }  else if (x <= 320) { // 向右推摇杆，越靠近中间值速度越慢
-    // 获取速度模拟值
-    speed_x = map(x, 320, 0, 0, 255);
-    analogWrite(IA, 0);
-    analogWrite(IB, speed_x);
-
-    analogWrite(IIA, 0);
-    analogWrite(IIB, speed_x);
-  } else if (x > 330) { // 向左推摇杆，越靠近中间值速度越慢，摇杆的最大模拟值需要实测，我这里最大值是827左右，这里取模拟值的时候一定要包含摇杆的取值范围，否则再靠近边界的时候会出现转速抖动
-    speed_x = map(x, 320, 830, 0, 255);
-    analogWrite(IA, speed_x);
-    analogWrite(IB, 0);
-
-    analogWrite(IIA, speed_x);
-    analogWrite(IIB, 0);
+  int xVal = x - 494;
+  if (xVal < 0) {
+    xVal = -xVal;
   }
 
-  // 转向
-  // 以下数值要根据自己的摇杆测试获取，如果取值有问题，会出现电机速度输出不稳定的情况，比如我手里的这款摇杆，静止状态下x轴的值在325-327之间波动，y轴在333-337之间波动
- if (y <= 200) { // 向右推摇杆，越靠近中间值速度越慢
-    // 获取速度模拟值
-    speed_y = map(y, 320, 0, 0, 255);
-    analogWrite(IA, 0);
-    analogWrite(IB, 0);
+  int yVal = y - 508;
+  if (yVal < 0) {
+    yVal = -yVal;
+  }
+   Serial.print("yVal:");
+   Serial.println(yVal, DEC);
+   Serial.print("xVal:");
+   Serial.println(xVal, DEC);
+  if (xVal > yVal) {
+    // 以下数值要根据自己的摇杆测试获取，如果取值有问题，会出现电机速度输出不稳定的情况，比如我手里的这款摇杆，静止状态下x轴的值在494左右，y轴在508左右
+    if (x <= 520 && x > 490) { // 静止区（也就是默认情况下摇杆的模拟输入值）
+      analogWrite(IA, 0);
+      analogWrite(IB, 0);
 
-    analogWrite(IIA, 0);
-    analogWrite(IIB, speed_y);
-  } else if (y > 500) { // 向左推摇杆，越靠近中间值速度越慢，摇杆的最大模拟值需要实测，我这里最大值是827左右，这里取模拟值的时候一定要包含摇杆的取值范围，否则再靠近边界的时候会出现转速抖动
-    speed_x = map(y, 320, 830, 0, 255);
-    analogWrite(IA, 0);
-    analogWrite(IB, speed_y);
+      analogWrite(IIA, 0);
+      analogWrite(IIB, 0);
+    }  else if (x <= 480) { // 向右推摇杆，越靠近中间值速度越慢
+      // 获取速度模拟值
+      speed_x = map(x, 500, 0, 0, 255);
+      analogWrite(IA, 0);
+      analogWrite(IB, speed_x);
 
-    analogWrite(IIA, 0);
-    analogWrite(IIB, 0);
+      analogWrite(IIA, 0);
+      analogWrite(IIB, speed_x);
+      Serial.print("speed:");
+      Serial.println(speed_x, DEC);
+    } else if (x > 530) { // 向左推摇杆，越靠近中间值速度越慢，摇杆的最大模拟值需要实测，我这里最大值是1023左右，这里取模拟值的时候一定要包含摇杆的取值范围，否则再靠近边界的时候会出现转速抖动
+      speed_x = map(x, 500, 1023, 0, 255);
+      analogWrite(IA, speed_x);
+      analogWrite(IB, 0);
+
+      analogWrite(IIA, speed_x);
+      analogWrite(IIB, 0);
+      Serial.print("speed:");
+      Serial.println(speed_x, DEC);
+    }
+  } else {
+    // 转向
+    // 以下数值要根据自己的摇杆测试获取，如果取值有问题，会出现电机速度输出不稳定的情况，比如我手里的这款摇杆，静止状态下x轴的值在494左右，y轴在508左右
+    if (y <= 790 && y > 320) { // 静止区（也就是默认情况下摇杆的模拟输入值）
+      analogWrite(IA, 0);
+      analogWrite(IB, 0);
+
+      analogWrite(IIA, 0);
+      analogWrite(IIB, 0);
+    } else if (y <= 320) { // 向右推摇杆，越靠近中间值速度越慢
+      // 获取速度模拟值
+      speed_y = map(y, 500, 0, 0, 255);
+      analogWrite(IA, speed_y);
+      analogWrite(IB, 0);
+
+      analogWrite(IIA, 0);
+      analogWrite(IIB, speed_y);
+      Serial.print("speedY:");
+      Serial.println(speed_y, DEC);
+    } else if (y > 790) { // 向左推摇杆，越靠近中间值速度越慢，摇杆的最大模拟值需要实测，我这里最大值是827左右，这里取模拟值的时候一定要包含摇杆的取值范围，否则再靠近边界的时候会出现转速抖动
+      speed_y = map(y, 500, 1023, 0, 255);
+      analogWrite(IA, 0);
+      analogWrite(IB, speed_y);
+
+      analogWrite(IIA, speed_y);
+      analogWrite(IIB, 0);
+      Serial.print("speedY:");
+      Serial.println(speed_y, DEC);
+    }
   }
 
-  
-  
-  Serial.print("speed:");
-  Serial.println(speed_x, DEC);
   delay(15);
 }
